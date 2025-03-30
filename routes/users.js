@@ -40,9 +40,12 @@ router.post("/register", (req, res) => {
 });
 
 // Hämta alla användare
+// Endast för utvecklingsändamål, inte för produktion
 router.get("/", (req, res) => {
   try {
-    const stmt = db.prepare("SELECT id, name, email, address FROM Users"); // Hämta alla användare med ID, namn och e-postadress
+    const stmt = db.prepare(
+      "SELECT id, name, email, address, password FROM Users"
+    ); // Hämta alla användare med ID, namn och e-postadress
     const users = stmt.all(); // Kör SQL-frågan och hämta alla användare
     if (!users) {
       return res.status(404).json({ error: "Inga användare hittades" });
