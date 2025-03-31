@@ -17,9 +17,11 @@ router.get("/", (req, res) => {
       },
     };
 
-    // Kontrollera om datan finns (detta är mest för att demonstrera felhantering)
+    // Kontrollera om datan finns
     if (!companyInfo) {
-      throw new Error("Företagsinformationen kunde inte hämtas.");
+      return res
+        .status(404)
+        .json({ error: "Företagsinformationen kunde inte hittas." });
     }
 
     // Skicka JSON-data som svar
