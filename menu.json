@@ -1,0 +1,41 @@
+{
+    "menu":[
+      {
+        "id":1,
+        "title":"Bryggkaffe",
+        "desc":"En klassisk kopp med rund smak och tydlig arom, bryggd på månadens utvalda bönor.",
+        "price":39
+      },
+      {
+        "id":2,
+        "title":"Caffè Doppio",
+        "desc":"Dubbel espresso för dig som vill ha en kraftfull och intensiv start på dagen.",
+        "price":49
+      },
+      {
+        "id":3,
+        "title":"Cappuccino",
+        "desc":"Perfekt balans mellan espresso, varm mjölk och fluffigt mjölkskum – ett italienskt original.",
+        "price":49
+      },
+      {
+        "id":4,
+        "title":"Latte Macchiato",
+        "desc":"Lagrad mjölk med ett stänk av espresso – visuellt vacker och mjukt smakrik.",
+        "price":49
+      },
+      {
+        "id":5,
+        "title":"Kaffe Latte",
+        "desc":"Len och mjölkig favorit med dubbla espresso och varm ångad mjölk för en mild smakupplevelse.",
+        "price":54
+      },
+      {
+        "id":6,
+        "title":"Cortado",
+        "desc":"En kraftig espresso avrundad med en skvätt varm mjölk för en jämn och mjuk karaktär.",
+        "price":39
+      }
+    ]
+  }
+  
