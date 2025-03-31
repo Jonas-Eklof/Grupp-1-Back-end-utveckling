@@ -29,7 +29,7 @@ router.post("/register", (req, res) => {
 
     // Lägg till användaren i databasen
     const stmt = db.prepare(
-      "INSERT INTO Users (id, name, address, password, email) VALUES (?, ?, ?, ?, ?)"
+      "INSERT INTO Users (user_id, name, address, password, email) VALUES (?, ?, ?, ?, ?)"
     );
     stmt.run(id, name, address, hashedPassword, email);
 
@@ -44,7 +44,7 @@ router.post("/register", (req, res) => {
 router.get("/", (req, res) => {
   try {
     const stmt = db.prepare(
-      "SELECT id, name, email, address, password FROM Users"
+      "SELECT user_id, name, email, address, password FROM Users"
     ); // Hämta alla användare med ID, namn och e-postadress
     const users = stmt.all(); // Kör SQL-frågan och hämta alla användare
     if (!users) {
@@ -61,7 +61,7 @@ router.get("/:id", (req, res) => {
   const { id } = req.params;
   try {
     const stmt = db.prepare(
-      "SELECT name, address, email FROM Users WHERE id = ?"
+      "SELECT name, address, email FROM Users WHERE user_id = ?"
     );
     const user = stmt.get(id);
     if (!user) {
@@ -73,4 +73,4 @@ router.get("/:id", (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = router; // Exportera routern för användare så att den kan användas i servern
