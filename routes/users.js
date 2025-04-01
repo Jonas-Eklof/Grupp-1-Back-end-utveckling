@@ -7,38 +7,6 @@ const saltRounds = 10; // Antal salt-rundor för bcrypt
 
 const router = express.Router(); // Skapa en router för användare
 
-// Lägg till en ny användare med slumpmässigt ID
-router.post("/register", (req, res) => {
-  const { name, address, password, email } = req.body;
-  const id = uuidv4(); // Generera slumpmässigt ID med uuidv4 bibliotek
-
-  try {
-    // Kontrollera om e-postadressen redan finns i databasen
-    const checkEmail = db.prepare("SELECT email FROM Users WHERE email = ?");
-    const existingUser = checkEmail.get(email);
-
-    if (existingUser) {
-      // Om e-postadressen redan finns, skicka ett felmeddelande
-      return res
-        .status(400)
-        .json({ error: "Epostadressen finns redan registrerad" });
-    }
-
-    // Hasha lösenordet med bcrypt
-    const hashedPassword = bcrypt.hashSync(password, saltRounds);
-
-    // Lägg till användaren i databasen
-    const stmt = db.prepare(
-      "INSERT INTO Users (user_id, name, address, password, email) VALUES (?, ?, ?, ?, ?)"
-    );
-    stmt.run(id, name, address, hashedPassword, email);
-
-    res.json({ message: "Användare skapad" });
-  } catch (error) {
-    res.status(400).json({ error: error.message }); // Returnera felmeddelande om något går fel
-  }
-});
-
 // Hämta alla användare
 // Endast för utvecklingsändamål, inte för produktion
 router.get("/", (req, res) => {
