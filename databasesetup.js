@@ -58,3 +58,29 @@ db.exec(`
 `);
 
 console.log("Tabeller skapade!");
+
+// Förbered en SQL-fråga för att lägga till produkter
+const insertProduct = db.prepare(`
+  INSERT INTO Products (name, description, price) VALUES (?, ?, ?)
+`);
+
+// Produkterna som ska läggas in
+const products = [
+  ["Bryggkaffe", "En klassisk kopp med rund smak och tydlig arom.", 39],
+  ["Caffè Doppio", "Dubbel espresso för en kraftfull start på dagen.", 49],
+  ["Cappuccino", "Balans mellan espresso, mjölk och skum.", 49],
+  ["Latte Macchiato", "Mjölk med ett stänk av espresso.", 49],
+  ["Kaffe Latte", "Dubbel espresso och ångad mjölk.", 54],
+  ["Cortado", "Espresso med en skvätt varm mjölk.", 39]
+];
+
+// Kolla om produkterna redan finns i databasen
+const count = db.prepare("SELECT COUNT(*) AS count FROM Products").get().count;
+if (count === 0) {
+  db.transaction(() => {
+    products.forEach((product) => insertProduct.run(...product));
+  })();
+  console.log("Produkter har lagts till i databasen!");
+} else {
+  console.log("Produkter finns redan i databasen.");
+}
