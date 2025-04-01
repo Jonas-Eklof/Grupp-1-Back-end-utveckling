@@ -10,11 +10,19 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jonas-Eklof/Grupp-1-Back-end-utveckling/issues"
+  },
+  "homepage": "https://github.com/Jonas-Eklof/Grupp-1-Back-end-utveckling#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^11.9.1",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-router": "^0.0.1",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
     "uuid": "^11.1.0"
   }
 }
