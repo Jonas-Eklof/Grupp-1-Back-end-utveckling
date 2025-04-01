@@ -47,7 +47,7 @@ db.exec(`
 `);
 
 db.exec(`
-  CREATE TABLE IF NOT EXISTS Cart (
+  CREATE TABLE IF NOT EXISTS Carts (
     cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
     product_id INTEGER NOT NULL,
