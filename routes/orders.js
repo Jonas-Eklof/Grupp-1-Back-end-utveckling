@@ -14,7 +14,7 @@ router.post("/", (req, res) => {
 
   try {
     const stmt = db.prepare(`
-      INSERT INTO orders (user_id, order_date, delivery_status, quantity, total_price)
+      INSERT INTO Orders (user_id, order_date, delivery_status, quantity, total_price)
       VALUES (?, ?, ?, ?, ?)
     `);
     const result = stmt.run(
@@ -27,7 +27,7 @@ router.post("/", (req, res) => {
     const order_id = result.lastInsertRowid;
 
     const itemStmt = db.prepare(`
-      INSERT INTO order_items (order_id, product_id, quantity, price)
+      INSERT INTO Order_items (order_id, product_id, quantity, price)
       VALUES (?, ?, ?, ?)
     `);
 
@@ -47,7 +47,7 @@ router.get("/:user_id", (req, res) => {
   const { user_id } = req.params;
 
   try {
-    const stmt = db.prepare("SELECT * FROM orders WHERE user_id = ?");
+    const stmt = db.prepare("SELECT * FROM Orders WHERE user_id = ?");
     const orders = stmt.all(user_id);
 
     if (orders.length === 0) {
@@ -59,12 +59,12 @@ router.get("/:user_id", (req, res) => {
   }
 });
 
-// Hämta detaljer för en specifik order
-router.get("/details/:id", (req, res) => {
-  const { id } = req.params;
+// Hämta detaljer för en specifik order via order_id
+router.get("/:order_id", (req, res) => {
+  const { order_id } = req.params;
   try {
-    const stmt = db.prepare("SELECT * FROM orders WHERE order_id = ?");
-    const order = stmt.get(id);
+    const stmt = db.prepare("SELECT * FROM Orders WHERE order_id = ?");
+    const order = stmt.get(order_id);
 
     if (!order) {
       return res.status(404).json({ error: "Ordern hittades inte" });
@@ -86,13 +86,17 @@ router.put("/:id/delivery-status", (req, res) => {
 
   try {
     const stmt = db.prepare(`
-      UPDATE orders SET delivery_status = ? WHERE order_id = ?
+      UPDATE Orders SET delivery_status = ? WHERE order_id = ?
     `);
     stmt.run(status, id);
 
     res.json({ message: `Order ${id} uppdaterad till ${status}` });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
   }
 });
 
