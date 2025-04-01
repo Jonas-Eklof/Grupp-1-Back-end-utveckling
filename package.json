@@ -1,0 +1,20 @@
+{
+  "name": "grupp-1-back-end-utveckling",
+  "version": "1.0.0",
+  "description": "Grupp 1 Back end-utveckling examinationsuppgift",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^11.9.1",
+    "express": "^4.21.2",
+    "express-router": "^0.0.1",
+    "uuid": "^11.1.0"
+  }
+}
