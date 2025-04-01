@@ -9,7 +9,7 @@ const db = new sqlite3.Database('./database.sqlite');
 // ----------------------------
 // GET /product – Hämta hela menyn
 // ----------------------------
-router.get('/product', (req, res) => {
+router.get('/products', (req, res) => {
   // Hämtar alla rader från tabellen "products"
   db.all('SELECT * FROM Products', (err, rows) => {
     if (err) {
@@ -24,7 +24,7 @@ router.get('/product', (req, res) => {
 // ----------------------------------
 // GET /product/:id – En specifik produkt
 // ----------------------------------
-router.get('/product/:id', (req, res) => {
+router.get('/products/:id', (req, res) => {
   const id = parseInt(req.params.id); // Tar ut id:t från URL:en
 
   // Hämtar en produkt som matchar id:t
