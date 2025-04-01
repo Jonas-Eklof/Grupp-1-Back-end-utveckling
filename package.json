@@ -2,13 +2,10 @@
   "name": "grupp-1-back-end-utveckling",
   "version": "1.0.0",
   "description": "Grupp 1 Back end-utveckling examinationsuppgift",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Jonas-Eklof/Grupp-1-Back-end-utveckling.git"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
