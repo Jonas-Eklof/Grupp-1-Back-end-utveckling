@@ -30,7 +30,8 @@ db.exec(`
     order_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    quantity INTEGER NOT NULL CHECK(quantity > 0),
+    delivery_status TEXT NOT NULL,
+    total_price TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
   )
 `);
@@ -71,7 +72,7 @@ const products = [
   ["Cappuccino", "Balans mellan espresso, mjölk och skum.", 49],
   ["Latte Macchiato", "Mjölk med ett stänk av espresso.", 49],
   ["Kaffe Latte", "Dubbel espresso och ångad mjölk.", 54],
-  ["Cortado", "Espresso med en skvätt varm mjölk.", 39]
+  ["Cortado", "Espresso med en skvätt varm mjölk.", 39],
 ];
 
 // Kolla om produkterna redan finns i databasen

@@ -13,12 +13,13 @@ app.use(cors()); // Använd cors för att tillåta alla domäner att göra förf
 
 app.use("/users", usersRouter); // Använd userRouter för alla förfrågningar som börjar med /users
 app.use("/about", aboutRouter); // Använd aboutRouter för alla förfrågningar som börjar med /about
-app.use("/products", productsRouter); // Använd productsRouter för alla förfrågningar som börjar med /products
+app.use(productsRouter); // Använd productsRouter för alla förfrågningar som börjar med /products
 app.use("/orders", ordersRouter); // Använd ordersRouter för alla förfrågningar som börjar med /orders
-app.use("/carts", cartsRouter); // Använd cartRouter för alla förfrågningar som börjar med /cart
+app.use(cartsRouter); // Använd cartRouter för alla förfrågningar som börjar med /cart
 app.use(authRouter);
 
 const PORT = 5000; // Definiera porten för servern
-app.listen(PORT, () => { // Starta servern och lyssna på angiven port
+app.listen(PORT, () => {
+  // Starta servern och lyssna på angiven port
   console.log(`Server körs på http://localhost:${PORT}`);
 });
