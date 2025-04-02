@@ -19,6 +19,7 @@ function authenticateToken(req, res, next) {
     try {
         // Verifierar token
         const verified = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Token innehåll:", verified);  // Debug
         req.user = verified; // Lägg till verifierad användare i request-objektet
         next();
     } catch (err) {
