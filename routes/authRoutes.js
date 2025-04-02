@@ -143,7 +143,7 @@ router.post(
     // - som upphör att gälla efter 1 timme (expiresIn)
     const token = jwt.sign(
       {
-        user_id: user.id,
+        user_id: user.user_id,
         email: user.email,
         name: user.name,
       },

@@ -1,6 +1,7 @@
 const express = require("express"); // Importera express för att skapa en router
 const { v4: uuidv4 } = require("uuid"); // Importera uuid för att generera slumpmässiga ID:n
 const db = require("../database"); // Importera databasmodulen
+const authenticateToken = require("../middleware/authMiddleware");
 
 const bcrypt = require("bcryptjs"); // Importera bcrypt för att hash:a lösenord
 const saltRounds = 10; // Antal salt-rundor för bcrypt
@@ -25,8 +26,17 @@ router.get("/", (req, res) => {
 });
 
 // Hämta en specifik användare via ID
-router.get("/:id", (req, res) => {
+router.get("/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
+
+  // Kontrollera att den inloggade användaren har åtkomst till denna info
+  if (req.user.user_id !== id) {
+    console.log("Åtkomst nekad - användar-ID matchar inte");
+    console.log("Token user_id:", req.user.user_id);
+    console.log("Begärt ID:", id);
+    return res.status(403).json({ error: "Åtkomst nekad" });
+  }
+
   try {
     const stmt = db.prepare(
       "SELECT name, address, email FROM Users WHERE user_id = ?"
