@@ -1,3 +1,5 @@
+// Detta är en middleware-funktion för att logga information om inkommande HTTP-förfrågningar och svar i en Express-applikation. Den loggar metod, URL, statuskod, IP-adress, användaragent, begärningskropp och svarstid.
+
 const logger = (req, res, next) => {
   const startTime = Date.now(); // Startar tidtagning för requesten
 
