@@ -2,10 +2,12 @@ const express = require("express");
 const db = require("../database"); // Se till att databasen är korrekt importerad
 const router = express.Router();
 
+
 // Hämta alla ordrar för en användare
 router.get("/user/:user_id", (req, res) => {
   // Ändrat här från /:user_id till /user/:user_id då det krockar med /:order_id annars
   const { user_id } = req.params;
+
 
   if (!user_id) {
     return res.status(400).json({ error: "User ID saknas" }); // 400 om user_id inte skickas
@@ -20,6 +22,7 @@ router.get("/user/:user_id", (req, res) => {
     }
     res.json(orders);
   } catch (error) {
+
     res.status(500).json({ error: "Serverfel vid hämtning av ordrar" });
   }
 });
