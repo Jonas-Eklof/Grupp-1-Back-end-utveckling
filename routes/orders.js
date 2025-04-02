@@ -3,47 +3,48 @@ const db = require("../database"); // Se till att databasen är korrekt importer
 const router = express.Router();
 
 // Skapa en order
-router.post("/", (req, res) => {
-  const { user_id, items, discount, total_price } = req.body;
-  const order_date = new Date().toISOString(); // Skapa order_date som den aktuella tidpunkten.
+// router.post("/", (req, res) => {
+//   const { user_id, items, discount, total_price } = req.body;
+//   const order_date = new Date().toISOString(); // Skapa order_date som den aktuella tidpunkten.
 
-  let total_quantity = 0;
-  items.forEach((item) => {
-    total_quantity += item.quantity; // Lägg till quantity för varje item
-  });
+//   let total_quantity = 0;
+//   items.forEach((item) => {
+//     total_quantity += item.quantity; // Lägg till quantity för varje item
+//   });
 
-  try {
-    const stmt = db.prepare(`
-      INSERT INTO Orders (user_id, order_date, delivery_status, quantity, total_price)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-    const result = stmt.run(
-      user_id,
-      order_date,
-      "pending",
-      total_quantity,
-      total_price
-    );
-    const order_id = result.lastInsertRowid;
+//   try {
+//     const stmt = db.prepare(`
+//       INSERT INTO Orders (user_id, order_date, delivery_status, quantity, total_price)
+//       VALUES (?, ?, ?, ?, ?)
+//     `);
+//     const result = stmt.run(
+//       user_id,
+//       order_date,
+//       "pending",
+//       total_quantity,
+//       total_price
+//     );
+//     const order_id = result.lastInsertRowid;
 
-    const itemStmt = db.prepare(`
-      INSERT INTO Order_items (order_id, product_id, quantity, price)
-      VALUES (?, ?, ?, ?)
-    `);
+//     const itemStmt = db.prepare(`
+//       INSERT INTO Order_items (order_id, product_id, quantity, price)
+//       VALUES (?, ?, ?, ?)
+//     `);
 
-    items.forEach((item) => {
-      itemStmt.run(order_id, item.product_id, item.quantity, item.price);
-    });
+//     items.forEach((item) => {
+//       itemStmt.run(order_id, item.product_id, item.quantity, item.price);
+//     });
 
-    res.json({ message: "Order skapad", order_id: order_id });
-  } catch (error) {
-    console.error("Fel vid skapande av order:", error); // Logga eventuella fel
-    res.status(400).json({ error: error.message });
-  }
-});
+//     res.json({ message: "Order skapad", order_id: order_id });
+//   } catch (error) {
+//     console.error("Fel vid skapande av order:", error); // Logga eventuella fel
+//     res.status(400).json({ error: error.message });
+//   }
+// });
 
 // Hämta alla ordrar för en användare
-router.get("/:user_id", (req, res) => {
+router.get("/user/:user_id", (req, res) => {
+  // Ändrat här från /:user_id till /user/:user_id då det krockar med /:order_id annars
   const { user_id } = req.params;
 
   try {
@@ -76,7 +77,8 @@ router.get("/:order_id", (req, res) => {
 });
 
 // Uppdatera leveransstatus för en order
-router.put("/:id/delivery-status", (req, res) => {
+router.put("/:id/delivery_status", (req, res) => {
+  // Ändrat från - till _
   const { id } = req.params;
   const { status } = req.body;
 
@@ -93,10 +95,6 @@ router.put("/:id/delivery-status", (req, res) => {
     res.json({ message: `Order ${id} uppdaterad till ${status}` });
   } catch (error) {
     res.status(500).json({ error: error.message });
-  }
-});
-
-module.exports = router;
   }
 });
 

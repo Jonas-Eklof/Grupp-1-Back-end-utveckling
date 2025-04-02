@@ -48,10 +48,10 @@ router.post("/carts", (req, res) => {
     } else {
       // Lägg till ny produkt i kundvagnen
       const insertStmt = db.prepare(`
-        INSERT INTO Carts (user_id, product_id, quantity, added_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO Carts (user_id, product_id, quantity)
+        VALUES (?, ?, ?)
       `);
-      insertStmt.run(user_id, product_id, quantity, new Date().toISOString());
+      insertStmt.run(user_id, product_id, quantity);
     }
 
     res.status(201).json({ message: "Produkt tillagd i kundvagnen!" });
@@ -111,7 +111,7 @@ router.post("/orders", (req, res) => {
   try {
     // 1. Hämta varorna i kundvagnen
     const cartStmt = db.prepare(`
-      SELECT Carts.product_id, Carts.quantity, Products.price
+      SELECT Carts.product_id, Carts.quantity, Products.name, Products.price
       FROM Carts
       JOIN Products ON Carts.product_id = Products.product_id
       WHERE Carts.user_id = ?
@@ -159,9 +159,18 @@ router.post("/orders", (req, res) => {
     const deleteCartStmt = db.prepare("DELETE FROM Carts WHERE user_id = ?");
     deleteCartStmt.run(user_id);
 
-    res
-      .status(201)
-      .json({ message: "Order skapad!", order_id, total_price: totalPrice });
+    res.status(201).json({
+      message: "Order skapad!",
+      order_id,
+      order_date: new Date().toISOString(),
+      delivery_status: "pending",
+      total_price: totalPrice,
+      products: cartItems.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    });
   } catch (error) {
     console.error("Order-fel:", error);
     res.status(500).json({ message: "Serverfel vid orderläggning" });
