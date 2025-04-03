@@ -6,7 +6,6 @@ const productsRouter = require("./routes/products"); // Importera produktrutten
 const ordersRouter = require("./routes/orders"); // Importera orderrutten
 const cartsRouter = require("./routes/carts"); // Importera kundvagnsrutten
 const authRouter = require("./routes/authRoutes");
-
 const logger = require("./middleware/logger"); // Importera logger-middleware för att logga inkommande förfrågningar
 
 const authenticateToken = require("./middleware/authMiddleware"); // Importera autentiseringstoken-middleware för att skydda vissa rutter
