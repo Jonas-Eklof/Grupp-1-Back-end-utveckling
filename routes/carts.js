@@ -9,14 +9,43 @@ router.get("/carts/:user_id", (req, res) => {
 
   try {
     const stmt = db.prepare(`
-      SELECT Carts.cart_id, Products.name, Carts.quantity, Products.price
+      SELECT Carts.cart_id, Products.name, Carts.quantity, Products.price,
+             (Carts.quantity * Products.price) AS total_item_price
       FROM Carts
       JOIN Products ON Carts.product_id = Products.product_id
       WHERE Carts.user_id = ?
     `);
     const cartItems = stmt.all(user_id);
 
-    res.status(200).json(cartItems);
+    // Om kundvagnen är tom, returnera 404 Not Found
+    if (cartItems.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Ingen kundvagn hittades för denna användare." });
+    }
+
+    // Beräkna totalpris och total antal produkter
+    let totalPrice = 0;
+    let totalQuantity = 0;
+
+    cartItems.forEach((item) => {
+      totalPrice += item.total_item_price;
+      totalQuantity += item.quantity;
+    });
+
+    // Om fler än 3 produkter i varukorgen → ge 10% rabatt
+    let discount = 0;
+    if (totalQuantity > 2) {
+      discount = totalPrice * 0.1; // 10% rabatt
+      totalPrice -= discount;
+    }
+
+    res.status(200).json({
+      cartItems,
+      totalQuantity,
+      discount: discount.toFixed(2),
+      finalPrice: totalPrice.toFixed(2),
+    });
   } catch (error) {
     console.error("Fel vid hämtning av kundvagn:", error);
     res.status(500).json({ message: "Serverfel vid hämtning av kundvagn" });
@@ -30,6 +59,16 @@ router.post("/carts", (req, res) => {
 
   if (!user_id || !product_id || !quantity || quantity <= 0) {
     return res.status(400).json({ message: "Ogiltig data för kundvagnen" });
+  }
+
+  // Kontrollera om produkten existerar i databasen innan den läggs till
+  const productCheckStmt = db.prepare(
+    "SELECT * FROM Products WHERE product_id = ?"
+  );
+  const productExists = productCheckStmt.get(product_id);
+
+  if (!productExists) {
+    return res.status(404).json({ message: "Produkten finns inte." });
   }
 
   try {
@@ -119,16 +158,28 @@ router.post("/orders", (req, res) => {
     const cartItems = cartStmt.all(user_id);
 
     if (cartItems.length === 0) {
-      return res.status(400).json({ message: "Kundvagnen är tom." });
+      return res
+        .status(404)
+        .json({ message: "Kundvagnen är tom, order kan inte skapas." });
     }
 
-    // 2. Beräkna totalpris
-    const totalPrice = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+    // 2. Beräkna totalpris och antal produkter
+    let totalPrice = 0;
+    let totalQuantity = 0;
 
-    // 3. Skapa en ny order
+    cartItems.forEach((item) => {
+      totalPrice += item.price * item.quantity;
+      totalQuantity += item.quantity;
+    });
+
+    // 3. Applicera rabatt om fler än 3 produkter
+    let discount = 0;
+    if (totalQuantity >= 3) {
+      discount = totalPrice * 0.1; // 10% rabatt
+      totalPrice -= discount;
+    }
+
+    // 4. Skapa en ny order
     const orderStmt = db.prepare(`
       INSERT INTO Orders (user_id, order_date, delivery_status, total_price)
       VALUES (?, ?, ?, ?)
@@ -141,7 +192,7 @@ router.post("/orders", (req, res) => {
     );
     const order_id = orderResult.lastInsertRowid;
 
-    // 4. Flytta produkter från Carts till Order_Items
+    // 5. Flytta produkter från Carts till Order_Items
     const orderItemStmt = db.prepare(`
       INSERT INTO Order_Items (order_id, product_id, quantity)
       VALUES (?, ?, ?)
@@ -153,18 +204,27 @@ router.post("/orders", (req, res) => {
       }
     });
 
-    insertOrderItems(cartItems);
+    try {
+      insertOrderItems(cartItems);
+    } catch (error) {
+      console.error("Fel vid order-inläggning:", error);
+      return res
+        .status(500)
+        .json({ message: "Misslyckades att lägga till produkter i ordern." });
+    }
 
-    // 5. Töm kundvagnen
+    // 6. Töm kundvagnen
     const deleteCartStmt = db.prepare("DELETE FROM Carts WHERE user_id = ?");
     deleteCartStmt.run(user_id);
 
+    // 7. Skicka tillbaka orderbekräftelse med rabatt-info
     res.status(201).json({
       message: "Order skapad!",
       order_id,
       order_date: new Date().toISOString(),
       delivery_status: "pending",
-      total_price: totalPrice,
+      total_price: totalPrice.toFixed(2), // Rabatterat pris
+      discount: discount.toFixed(2), // Visar rabattbeloppet
       products: cartItems.map((item) => ({
         name: item.name,
         quantity: item.quantity,
