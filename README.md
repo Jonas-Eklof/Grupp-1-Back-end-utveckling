@@ -1,109 +1,143 @@
-# Registrera ny användare:
+### POST `/register`
 
-## POST "/register"
+**Beskrivning:**  
+Skapa en ny användare med namn, email, adress och lösenord som obligatoriska fält
 
-body:
-{
-"email": "test@test.com",
-"password": "test",
-"name": "Test Användare",
-"address": "Testgatan 1"
-}
+**Body:**
 
-### Möjlig respons:
-
-201 Created
-{
-"message": "Användare skapad!"
-}
-
-400 Bad Request
-{
-"errors": [
-{
-"msg": "Ogiltig e-postadress",
-"param": "email",
-"location": "body"
-}
+```json
+[
+  {
+    "name": "Test User",
+    "password": "testpassword",
+    "email": "test@example.com",
+    "address": "Testgatan 1"
+  }
 ]
-}
+```
 
-# Logga in som användare
+**Svar – 201 Created**
 
-## POST "/login"
-
-body:
+```json
 {
-"email": "test@test.com",
-"password": "test"
+  "message": "Användare skapad!"
 }
+```
 
-### Möjlig respons:
+**Svar – 400 Bad Request**
 
-200 OK
+```json
 {
-"message": "Inloggad!",
-"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
-"user": {
-"id": "123e4567-e89b-12d3-a456-426614174000",
-"name": "Test Användare",
-"email": "test@test.com"
+  "errors": [
+    {
+      "msg": "Ogiltig e-postadress",
+      "param": "email",
+      "location": "body"
+    }
+  ]
 }
-}
+```
 
-400 Bad Request
+```json
 {
-"error": "Felaktig e-post eller lösenord"
+  "error": "E-postadressen finns redan"
 }
+```
 
-# Se användares sida
+---
 
-## GET "/users/:id"
+### POST `/login`
 
-/users/<DITT_USER_ID> // user-id som du får vid inloggningen,
+**Beskrivning:**  
+Logga in som en specifik användare och få tillgång till user_id och JWT-token.
+Email och Password är obligatoriska fält.
 
-exempel: http://localhost:5000/users/123e4567-e89b-12d3-a456-426614174000
+**Body:**
 
-### Headers:
-
-|Header| |Value|
-Authorization Bearer <DIN_TOKEN> // Token som du får vid inloggningen
-
-### Möjlig respons:
-
-200 OK
+```json
 {
-"name": "Test Användare",
-"address": "Testgatan 1",
-"email": "test@test.com"
+  "email": "test@example.com",
+  "password": "testpassword"
 }
+```
 
-401 Unauthorized
+**Svar – 200 OK**
+
+```json
 {
-"error": "Åtkomst nekad"
+  "message": "Inloggad!",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+  "user": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "name": "Test User",
+    "email": "test@example.com"
+  }
 }
+```
 
-403 Forbidden
+**Svar - 400 (Bad Request)**
+
+```json
 {
-"error": "Åtkomst nekad"
+  "errors": [
+    {
+      "msg": "Ogiltig e-postadress",
+      "param": "email",
+      "location": "body"
+    }
+  ]
 }
+```
 
-404 Not Found
+```json
 {
-"error": "Användaren hittades inte"
+  "errors": [
+    {
+      "msg": "Lösenord krävs",
+      "param": "password",
+      "location": "body"
+    }
+  ]
 }
+```
 
-## Tips och felsökning
+```json
+{
+  "error": "Felaktig e-post eller lösenord"
+}
+```
 
-Token har gått ut:
-Tokens är giltiga i 1 timme
-Gör en ny inloggning för att få en ny token
+**Svar – 404 Not Found**
 
-Felaktigt användar-ID:
-Kontrollera att ID:t är korrekt kopierat
-ID:t ska vara i UUID-format (t.ex. "123e4567-e89b-12d3-a456-426614174000")
+```json
+{
+  "message": "Användaren hittades inte"
+}
+```
 
-Debug-information:
-Om du får 403-access nekad, kontrollera:
-Att token-användarens ID matchar det ID du försöker hämta
-Serverns konsol för debug-utskrifter (visas i terminalen där servern körs)
+**Svar – 500 Serverfel**
+
+```json
+{
+  "error": "Ett fel uppstod"
+}
+```
+
+---
+
+    ## Tips och felsökning
+
+    Token har gått ut:
+    Tokens är giltiga i 1 timme
+    Gör en ny inloggning för att få en ny token
+
+    Felaktigt användar-ID:
+    Kontrollera att ID:t är korrekt kopierat
+    ID:t ska vara i UUID-format (t.ex. "123e4567-e89b-12d3-a456-426614174000")
+
+    Debug-information:
+    Om du får 403-access nekad, kontrollera:
+    Att token-användarens ID matchar det ID du försöker hämta
+    Serverns konsol för debug-utskrifter (visas i terminalen där servern körs)
+
+---
