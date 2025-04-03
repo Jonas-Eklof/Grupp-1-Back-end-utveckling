@@ -8,7 +8,8 @@ const cartsRouter = require("./routes/carts"); // Importera kundvagnsrutten
 const authRouter = require("./routes/authRoutes");
 
 const logger = require("./middleware/logger"); // Importera logger-middleware för att logga inkommande förfrågningar
->>>>>>>>> Temporary merge branch 2
+
+const authenticateToken = require("./middleware/authMiddleware"); // Importera autentiseringstoken-middleware för att skydda vissa rutter
 
 const app = express(); // Skapa en express-app
 app.use(express.json()); // Middleware för att parsa JSON-data i inkommande förfrågningar
