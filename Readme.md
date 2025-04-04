@@ -1,18 +1,29 @@
+**Grupp 1 Backend utveckling**
+
+Projektet använder en Express baserad server med konfigurerade routes för att hantera förfrågningar till en databas.
+Middlewares används för att logga, autentisera och kontrollera anrop till databasen.
+
 ---
 
 **Installation**
-
----
 
 Klona repo:t:  
 git clone https://github.com/Jonas-Eklof/Grupp-1-Back-end-utveckling.git
 
 cd Grupp-1-Back-end-utveckling
 
-node databasesetup.js (Kör databasesetup.js som skapar databasen och tabeller)
+node databasesetup.js (Kör databasesetup.js som skapar mappen db i vilken databasen och tabeller skapas)
+
 node server.js (Startar express servern)
 
 ---
+
+Base URL:
+http://localhost:5000/
+
+---
+
+***Endpoints***
 
 
 ### GET `/users`
