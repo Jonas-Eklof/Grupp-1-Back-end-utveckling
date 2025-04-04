@@ -18,12 +18,17 @@ node server.js (Startar express servern)
 
 ---
 
-Base URL:
+***Base URL:***
 http://localhost:5000/
 
 ---
 
 ***Endpoints***
+
+### GET `/about`
+Returnerar information om företaget Airbean.
+
+---
 
 
 ### GET `/users`
