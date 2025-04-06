@@ -10,7 +10,7 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 
 **Svar – (200 OK)**
 
-```json
+```
 [
   {
     "product_id": 1,
@@ -29,7 +29,7 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 
 **Fel (500 Internal Server Error):**
 
-```json
+```
 { "error": "Kunde inte hämta menyn" }
 
 ```
@@ -37,13 +37,21 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 ###  GET /products/:id
 
 **Svar - (200 OK):**
-```json
+```
 {
   "product_id": 2,
   "name": "Cappuccino",
   "description": "Perfekt balans mellan espresso, mjölk och mjölkskum.",
   "price": 49
 }
+
+```
+
+**Fel – (400 Bad Request)
+
+```
+
+{ "error": "Ogiltigt ID-format. ID måste vara ett positivt heltal." }
 
 ```
 
