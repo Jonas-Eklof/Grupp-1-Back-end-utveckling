@@ -25,9 +25,9 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
     "price": 49
   }
 ]
-```json
+```
 
-**Fel (500 Internal Server Error):**
+**Fel - (500 Internal Server Error):**
 
 ```json
 { "error": "Kunde inte hämta menyn" }
@@ -56,7 +56,7 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 
 ```
 
-**Fel (404 Not Found):**
+**Fel - (404 Not Found):**
 
 ```json
 
@@ -64,7 +64,7 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 
 ```
 
-**Fel (500 Internal Server Error):**
+**Fel - (500 Internal Server Error):**
 
 ```json
 
