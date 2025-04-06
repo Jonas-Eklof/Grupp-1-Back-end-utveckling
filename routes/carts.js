@@ -1,6 +1,7 @@
 const express = require("express");
-const db = require("../database"); // Importera databasmodulen
+const db = require("../database");
 const router = express.Router();
+const { validateCartInput } = require("../middleware/validateCart");
 
 // Hämta en användares kundvagn
 
@@ -54,22 +55,8 @@ router.get("/carts/:user_id", (req, res) => {
 
 // Lägg till en produkt i kundvagnen
 
-router.post("/carts", (req, res) => {
+router.post("/carts", validateCartInput, (req, res) => {
   const { user_id, product_id, quantity } = req.body;
-
-  if (!user_id || !product_id || !quantity || quantity <= 0) {
-    return res.status(400).json({ message: "Ogiltig data för kundvagnen" });
-  }
-
-  // Kontrollera om produkten existerar i databasen innan den läggs till
-  const productCheckStmt = db.prepare(
-    "SELECT * FROM Products WHERE product_id = ?"
-  );
-  const productExists = productCheckStmt.get(product_id);
-
-  if (!productExists) {
-    return res.status(404).json({ message: "Produkten finns inte." });
-  }
 
   try {
     // Kontrollera om produkten redan finns i kundvagnen
@@ -223,8 +210,8 @@ router.post("/orders", (req, res) => {
       order_id,
       order_date: new Date().toISOString(),
       delivery_status: "pending",
-      total_price: totalPrice.toFixed(2), // Rabatterat pris
       discount: discount.toFixed(2), // Visar rabattbeloppet
+      total_price: totalPrice.toFixed(2), // Rabatterat pris
       products: cartItems.map((item) => ({
         name: item.name,
         quantity: item.quantity,
