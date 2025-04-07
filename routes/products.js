@@ -22,7 +22,12 @@ router.get('/products', (req, res) => {
 // GET /products/:id – Hämta en specifik produkt
 // -------------------------------------------------
 router.get('/products/:id', (req, res) => {
-  const { id } = req.params; // ÄNDRAT: Använder enklare destructuring
+  // parseInt med 10 som radix för att säkerställa att id tolkas som ett decimalt heltal (bas 10)
+  const id = parseInt(req.params.id, 10); 
+  // Kontrollera att id är ett positivt heltal
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: 'Ogiltigt ID-format. ID måste vara ett positivt heltal.' });
+  }
 
   try {
     // ÄNDRAT: Använder prepare().get() istället för db.get(callback)
