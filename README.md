@@ -1,4 +1,4 @@
-**Grupp 1 Backend utveckling**
+# **Grupp 1 Backend utveckling**
 
 Projektet använder en Express baserad server med konfigurerade routes för att hantera förfrågningar till en databas.
 Middlewares används för att logga, autentisera och kontrollera anrop till databasen.
