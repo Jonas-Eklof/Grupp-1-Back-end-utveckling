@@ -12,9 +12,13 @@ git clone https://github.com/Jonas-Eklof/Grupp-1-Back-end-utveckling.git
 
 cd Grupp-1-Back-end-utveckling
 
+npm install
+
 node databasesetup.js (Kör databasesetup.js som skapar mappen db i vilken databasen och tabeller skapas)
 
 node server.js (Startar express servern)
+
+Använd Insomnia för att testa endpoints enligt instruktioner nedan.
 
 ---
 
@@ -109,6 +113,22 @@ user_id
 ```
 
 ---
+
+***Websockets tankar***
+Om vi vill lyfta användarupplevelsen och skapa en mer interaktiv webshop kan webscokets vara en bra idé.
+Chatfunktion/support skulle kunna implementeras för projektet.
+
+Kunder:
+Realtidsuppdateringar till kund om orderstatus.
+Varukorg kan synkas mellan olika enheter om man använder på telefon och dator.
+Man kan bygga FOMO genom att visa att tillexempel 5 andra potentiella kunder tittar på denna produkt just nu.
+
+Admin:
+För admin/företaget kan också realtidsuppdateringar vara en fördel, man kan se ordrar komma in, användare som registrerar sig eller kanske vill använda chatten för att få support.
+
+
+
+
 
 
 
