@@ -49,13 +49,15 @@ db.exec(`
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS Carts (
-    cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
-    product_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL CHECK(quantity > 0),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
-  )
+  cart_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT,
+  guest_id TEXT,
+  product_id INTEGER NOT NULL,
+  quantity INTEGER NOT NULL CHECK(quantity > 0),
+  FOREIGN KEY (user_id) REFERENCES Users(user_id),
+  FOREIGN KEY (product_id) REFERENCES Products(product_id),
+  CHECK (user_id IS NOT NULL OR guest_id IS NOT NULL)
+)
 `);
 
 console.log("Tabeller skapade!");

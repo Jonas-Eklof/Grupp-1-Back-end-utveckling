@@ -1,22 +1,43 @@
 const express = require("express");
 const db = require("../database");
 const router = express.Router();
+const { v4: uuidv4 } = require("uuid");
 const { validateCartInput } = require("../middleware/validateCart");
+
+// Simulerar tilldelandet av ett quest_id när man går in på vår sida
+
+router.get("/guest-id", (req, res) => {
+  const guest_id = uuidv4();
+  res.status(200).json({ guest_id });
+});
 
 // Hämta en användares kundvagn
 
-router.get("/carts/:user_id", (req, res) => {
-  const { user_id } = req.params;
+router.get("/carts/:id", (req, res) => {
+  const id = req.params.id;
 
   try {
-    const stmt = db.prepare(`
+    // Försök hämta med user_id först
+    let stmt = db.prepare(`
       SELECT Carts.cart_id, Products.name, Carts.quantity, Products.price,
              (Carts.quantity * Products.price) AS total_item_price
       FROM Carts
       JOIN Products ON Carts.product_id = Products.product_id
       WHERE Carts.user_id = ?
     `);
-    const cartItems = stmt.all(user_id);
+    let cartItems = stmt.all(id);
+
+    // Om inget hittades, prova med guest_id
+    if (cartItems.length === 0) {
+      stmt = db.prepare(`
+        SELECT Carts.cart_id, Products.name, Carts.quantity, Products.price,
+               (Carts.quantity * Products.price) AS total_item_price
+        FROM Carts
+        JOIN Products ON Carts.product_id = Products.product_id
+        WHERE Carts.guest_id = ?
+      `);
+      cartItems = stmt.all(id);
+    }
 
     // Om kundvagnen är tom, returnera 404 Not Found
     if (cartItems.length === 0) {
@@ -56,28 +77,32 @@ router.get("/carts/:user_id", (req, res) => {
 // Lägg till en produkt i kundvagnen
 
 router.post("/carts", validateCartInput, (req, res) => {
-  const { user_id, product_id, quantity } = req.body;
+  const { user_id, guest_id, product_id, quantity } = req.body;
+
+  const idField = user_id ? "user_id" : guest_id ? "guest_id" : null;
+  const idValue = user_id || guest_id;
+
+  if (!idField || !product_id || quantity === undefined) {
+    return res.status(400).json({ message: "user_id eller guest_id krävs." });
+  }
 
   try {
-    // Kontrollera om produkten redan finns i kundvagnen
     const checkStmt = db.prepare(`
-      SELECT * FROM Carts WHERE user_id = ? AND product_id = ?
+      SELECT * FROM Carts WHERE ${idField} = ? AND product_id = ?
     `);
-    const existingItem = checkStmt.get(user_id, product_id);
+    const existingItem = checkStmt.get(idValue, product_id);
 
     if (existingItem) {
-      // Uppdatera kvantiteten om produkten redan finns
       const updateStmt = db.prepare(`
-        UPDATE Carts SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?
+        UPDATE Carts SET quantity = quantity + ? WHERE ${idField} = ? AND product_id = ?
       `);
-      updateStmt.run(quantity, user_id, product_id);
+      updateStmt.run(quantity, idValue, product_id);
     } else {
-      // Lägg till ny produkt i kundvagnen
       const insertStmt = db.prepare(`
-        INSERT INTO Carts (user_id, product_id, quantity)
+        INSERT INTO Carts (${idField}, product_id, quantity)
         VALUES (?, ?, ?)
       `);
-      insertStmt.run(user_id, product_id, quantity);
+      insertStmt.run(idValue, product_id, quantity);
     }
 
     res.status(201).json({ message: "Produkt tillagd i kundvagnen!" });
@@ -111,21 +136,23 @@ router.delete("/carts/:cart_id", (req, res) => {
 
 // Töm en användares kundvagn
 
-router.delete("/carts/user/:user_id", (req, res) => {
-  const { user_id } = req.params;
+router.delete("/carts/:id", (req, res) => {
+  const { id } = req.params;
 
-  try {
-    const stmt = db.prepare("DELETE FROM Carts WHERE user_id = ?");
-    const result = stmt.run(user_id);
+  // Försök tömma user_id först
+  let stmt = db.prepare("DELETE FROM Carts WHERE user_id = ?");
+  let result = stmt.run(id);
 
-    if (result.changes > 0) {
-      res.status(200).json({ message: "Kundvagn tömd!" });
-    } else {
-      res.status(404).json({ message: "Ingen kundvagn att tömma" });
-    }
-  } catch (error) {
-    console.error("Fel vid tömning av kundvagn:", error);
-    res.status(500).json({ message: "Serverfel vid tömning av kundvagn" });
+  // Om inget togs bort, försök med guest_id
+  if (result.changes === 0) {
+    stmt = db.prepare("DELETE FROM Carts WHERE guest_id = ?");
+    result = stmt.run(id);
+  }
+
+  if (result.changes > 0) {
+    res.status(200).json({ message: "Kundvagn tömd!" });
+  } else {
+    res.status(404).json({ message: "Ingen kundvagn att tömma." });
   }
 });
 

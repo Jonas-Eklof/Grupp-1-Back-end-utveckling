@@ -1,7 +1,6 @@
-
 # ☕ AirBean API – Kundvagn & Order
 
-Detta API hanterar användares kundvagnar och beställningar i projektet **AirBean**. Det innehåller endpoints för att visa, lägga till, ta bort och beställa produkter från en användares kundvagn.
+Detta API hanterar användares kundvagnar och beställningar i projektet **AirBean**. Det innehåller endpoints för att visa, lägga till, ta bort och beställa produkter – både för inloggade användare och gäster.
 
 ---
 
@@ -9,7 +8,7 @@ Detta API hanterar användares kundvagnar och beställningar i projektet **AirBe
 
 Alla `POST`-förfrågningar till `/carts` valideras med middleware innan de behandlas:
 
-- `user_id` måste vara en sträng (UUID-format)
+- **user_id** eller **guest_id** måste skickas (minst ett krävs)
 - `product_id` måste vara ett heltal som existerar i menyn (Products-tabellen)
 - `quantity` måste vara ett heltal större än 0
 
@@ -21,12 +20,56 @@ Om något av dessa krav inte uppfylls returneras ett tydligt felmeddelande.
 
 ---
 
-### GET `/carts/:user_id`
+### GET `/guest-id`
 
 **Beskrivning:**  
-Hämtar innehållet i en användares kundvagn inklusive totalpris, produktantal och eventuell rabatt (10% rabatt vid 3 eller fler produkter).
+Genererar ett unikt `guest_id` som används av gästanvändare för att hantera sin kundvagn.
 
 **Svar – 200 OK**
+
+```json
+{
+  "guest_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+---
+
+### POST `/users/from-guest`
+
+**Beskrivning:**  
+Används när en gäst vill slutföra sin beställning. Skapar en ny användare baserat på inskickade uppgifter och överför varukorgen från `guest_id` till `user_id`.
+
+**Request Body:**
+
+```json
+{
+  "guest_id": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "example@example.com",
+  "password": "minst8tecken",
+  "name": "Förnamn Efternamn",
+  "address": "Adressgatan 12"
+}
+```
+
+**Svar – 201 Created**
+
+```json
+{
+  "message": "Användare skapad och varukorg överförd.",
+  "user_id": "a1b2c3d4..."
+}
+```
+
+---
+
+### GET `/carts/:id`
+
+**Beskrivning:**  
+Hämtar innehållet i en användares eller gästs kundvagn. Automatisk rabatt på 10% vid 3 eller fler produkter.
+
+**Svar – 200 OK**
+
 ```json
 {
   "cartItems": [
@@ -45,6 +88,7 @@ Hämtar innehållet i en användares kundvagn inklusive totalpris, produktantal 
 ```
 
 **Svar – 404 Not Found**
+
 ```json
 {
   "message": "Ingen kundvagn hittades för denna användare."
@@ -56,18 +100,20 @@ Hämtar innehållet i en användares kundvagn inklusive totalpris, produktantal 
 ### POST `/carts`
 
 **Beskrivning:**  
-Lägger till en produkt i användarens kundvagn. Om produkten redan finns uppdateras kvantiteten.
+Lägger till en produkt i kundvagnen. Gäller både `user_id` och `guest_id`. Om produkten redan finns uppdateras kvantiteten.
 
 **Request Body:**
+
 ```json
 {
-  "user_id": "uuid-här",
+  "guest_id": "123e4567...",
   "product_id": 2,
   "quantity": 1
 }
 ```
 
 **Svar – 201 Created**
+
 ```json
 {
   "message": "Produkt tillagd i kundvagnen!"
@@ -75,21 +121,25 @@ Lägger till en produkt i användarens kundvagn. Om produkten redan finns uppdat
 ```
 
 **Svar – 400 eller 404 (exempel):**
+
 ```json
 {
   "message": "Alla fält (user_id, product_id, quantity) krävs."
 }
 ```
+
 ```json
 {
   "message": "Felaktiga datatyper."
 }
 ```
+
 ```json
 {
   "message": "Kvantitet måste vara ett heltal större än 0."
 }
 ```
+
 ```json
 {
   "message": "Produkten finns inte i menyn."
@@ -101,9 +151,10 @@ Lägger till en produkt i användarens kundvagn. Om produkten redan finns uppdat
 ### DELETE `/carts/:cart_id`
 
 **Beskrivning:**  
-Tar bort en specifik produkt från användarens kundvagn baserat på `cart_id`.
+Tar bort en specifik produkt från kundvagnen baserat på `cart_id`.
 
 **Svar – 200 OK**
+
 ```json
 {
   "message": "Produkt borttagen från kundvagnen!"
@@ -111,6 +162,7 @@ Tar bort en specifik produkt från användarens kundvagn baserat på `cart_id`.
 ```
 
 **Svar – 404 Not Found**
+
 ```json
 {
   "message": "Produkt ej hittad i kundvagnen"
@@ -119,12 +171,13 @@ Tar bort en specifik produkt från användarens kundvagn baserat på `cart_id`.
 
 ---
 
-### DELETE `/carts/user/:user_id`
+### DELETE `/carts/:id`
 
 **Beskrivning:**  
-Tömmer hela kundvagnen för en specifik användare.
+Tömmer hela kundvagnen för en användare **eller** gäst (`user_id` eller `guest_id`).
 
 **Svar – 200 OK**
+
 ```json
 {
   "message": "Kundvagn tömd!"
@@ -132,9 +185,10 @@ Tömmer hela kundvagnen för en specifik användare.
 ```
 
 **Svar – 404 Not Found**
+
 ```json
 {
-  "message": "Ingen kundvagn att tömma"
+  "message": "Ingen kundvagn att tömma."
 }
 ```
 
@@ -143,9 +197,10 @@ Tömmer hela kundvagnen för en specifik användare.
 ### POST `/orders`
 
 **Beskrivning:**  
-Skapar en ny order från innehållet i användarens kundvagn. Om 3 eller fler produkter beställs, tillämpas 10% rabatt.
+Skapar en ny order från innehållet i en **registrerad användares** kundvagn. Gäster måste registrera sig först via `/users/from-guest`.
 
 **Request Body:**
+
 ```json
 {
   "user_id": "uuid-här"
@@ -153,6 +208,7 @@ Skapar en ny order från innehållet i användarens kundvagn. Om 3 eller fler pr
 ```
 
 **Svar – 201 Created**
+
 ```json
 {
   "message": "Order skapad!",
@@ -177,6 +233,7 @@ Skapar en ny order från innehållet i användarens kundvagn. Om 3 eller fler pr
 ```
 
 **Svar – 404 Not Found**
+
 ```json
 {
   "message": "Kundvagnen är tom, order kan inte skapas."
@@ -184,6 +241,7 @@ Skapar en ny order från innehållet i användarens kundvagn. Om 3 eller fler pr
 ```
 
 **Svar – 500 Server Error**
+
 ```json
 {
   "message": "Serverfel vid orderläggning"
