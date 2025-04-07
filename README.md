@@ -680,13 +680,15 @@ Uppdaterar leveransstatus för en specifik order.
 
 
 ***Websockets tankar***
-Om vi vill lyfta användarupplevelsen och skapa en mer interaktiv webshop kan webscokets vara en bra idé.
+Om vi vill lyfta användarupplevelsen och skapa en mer interaktiv webshop kan websockets vara en bra idé.
 Chatfunktion/support skulle kunna implementeras för projektet.
 
 Kunder:
-Realtidsuppdateringar till kund om orderstatus.
+Realtidsuppdateringar till kund om orderstatus samt lagersaldo.
 Varukorg kan synkas mellan olika enheter om man använder på telefon och dator.
-Man kan bygga FOMO genom att visa att tillexempel 5 andra potentiella kunder tittar på denna produkt just nu.
+Man kan bygga FOMO genom att visa att till exempel 5 andra potentiella kunder tittar på denna produkt just nu.
 
 Admin:
 För admin/företaget kan också realtidsuppdateringar vara en fördel, man kan se ordrar komma in, användare som registrerar sig eller kanske vill använda chatten för att få support.
+Förenklar analys och diagnostik.
+Websockets kan även minska belastningen på servern jämfört med upprepade API-anrop.
