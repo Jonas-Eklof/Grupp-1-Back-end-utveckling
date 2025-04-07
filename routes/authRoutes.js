@@ -165,4 +165,75 @@ router.post(
   }
 );
 
+// Skapa ny användare från guest_id och flytta varukorg
+router.post(
+  "/users/from-guest",
+  [
+    body("guest_id").notEmpty().withMessage("guest_id krävs"),
+    body("email").isEmail().withMessage("Ogiltig e-postadress"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Lösenordet måste vara minst 8 tecken långt"),
+    body("name").notEmpty().withMessage("Namn krävs"),
+    body("address").notEmpty().withMessage("Adress krävs"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { guest_id, email, password, name, address } = req.body;
+
+    try {
+      // 1. Kontrollera att gästens varukorg existerar
+      const guestCart = db
+        .prepare("SELECT * FROM Carts WHERE guest_id = ?")
+        .all(guest_id);
+
+      if (guestCart.length === 0) {
+        return res.status(400).json({
+          message: "Ingen varukorg kopplad till angivet guest_id.",
+        });
+      }
+
+      // 2. Kontrollera att e-postadressen inte redan finns
+      const existingUser = db
+        .prepare("SELECT email FROM Users WHERE email = ?")
+        .get(email);
+
+      if (existingUser) {
+        return res.status(400).json({
+          message: "E-postadressen är redan registrerad.",
+        });
+      }
+
+      // 3. Skapa ny användare
+      const user_id = uuidv4();
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      db.prepare(
+        `INSERT INTO Users (user_id, email, password, name, address)
+         VALUES (?, ?, ?, ?, ?)`
+      ).run(user_id, email, hashedPassword, name, address);
+
+      // 4. Flytta kundvagnen från guest_id till user_id
+      db.prepare(
+        `UPDATE Carts SET user_id = ?, guest_id = NULL WHERE guest_id = ?`
+      ).run(user_id, guest_id);
+
+      // 5. Svara med nya user_id:t
+      res.status(201).json({
+        message: "Användare skapad och varukorg överförd.",
+        user_id,
+      });
+    } catch (error) {
+      console.error("Fel vid skapande från gäst:", error);
+      res
+        .status(500)
+        .json({ message: "Serverfel vid registrering från gäst." });
+    }
+  }
+);
+
 module.exports = router;
