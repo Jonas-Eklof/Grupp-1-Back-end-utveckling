@@ -303,7 +303,7 @@ Denna del av API:t hanterar produkter (kaffesorter) i databasen. Data är hårdk
 
 ```
 
-###  GET /products/:id
+###  GET `/products/:id`
 
 **Svar - (200 OK):**
 
@@ -568,7 +568,7 @@ Skapar en ny order från innehållet i en **registrerad användares** kundvagn. 
 
 ---
 
-### GET/user/:user_id
+### GET `/user/:user_id`
 **Beskrivning:**   
 Hämtar alla ordrar kopplade till en viss användare.
 
@@ -609,7 +609,7 @@ Hämtar alla ordrar kopplade till en viss användare.
 ````
 ---
 
-### GET/orders/:order_id 
+### GET `/orders/:order_id` 
 **Beskrivning:**   
 Hämtar detaljer för en enskild order via order_id.
 
@@ -640,7 +640,7 @@ Hämtar detaljer för en enskild order via order_id.
 ````
 ---
 
-### PUT/orders/:id/delivery_status
+### PUT `/orders/:id/delivery_status`
 **Beskrivning:**   
 Uppdaterar leveransstatus för en specifik order.
 
