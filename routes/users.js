@@ -3,13 +3,10 @@ const { v4: uuidv4 } = require("uuid"); // Importera uuid för att generera slum
 const db = require("../database"); // Importera databasmodulen
 const authenticateToken = require("../middleware/authMiddleware");
 
-const bcrypt = require("bcryptjs"); // Importera bcrypt för att hash:a lösenord
-const saltRounds = 10; // Antal salt-rundor för bcrypt
-
 const router = express.Router(); // Skapa en router för användare
 
 // Hämta alla användare
-// Endast för utvecklingsändamål, inte för produktion
+// Endast för utvecklingsändamål, för att kunna visa att unikt id fungerar och lösenord är hashat
 router.get("/", (req, res) => {
   try {
     const stmt = db.prepare(

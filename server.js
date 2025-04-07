@@ -6,16 +6,16 @@ const productsRouter = require("./routes/products"); // Importera produktrutten
 const ordersRouter = require("./routes/orders"); // Importera orderrutten
 const cartsRouter = require("./routes/carts"); // Importera kundvagnsrutten
 const authRouter = require("./routes/authRoutes");
-
 const logger = require("./middleware/logger"); // Importera logger-middleware för att logga inkommande förfrågningar
+const limiter = require("./middleware/limiter"); // Importera limiter från limiter.js
 
-const authenticateToken = require("./middleware/authMiddleware");
-
+const authenticateToken = require("./middleware/authMiddleware"); // Importera autentiseringstoken-middleware för att skydda vissa rutter
 
 const app = express(); // Skapa en express-app
 app.use(express.json()); // Middleware för att parsa JSON-data i inkommande förfrågningar
 app.use(cors()); // Använd cors för att tillåta alla domäner att göra förfrågningar till servern
 app.use(logger); // Använd logger-middleware för att logga inkommande förfrågningar
+app.use(limiter); // Använd limiter-middleware för att begränsa antalet förfrågningar
 
 app.use("/users", usersRouter); // Använd userRouter för alla förfrågningar som börjar med /users
 app.use("/about", aboutRouter); // Använd aboutRouter för alla förfrågningar som börjar med /about
