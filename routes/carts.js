@@ -136,7 +136,7 @@ router.delete("/carts/:cart_id", (req, res) => {
 
 // Töm en användares kundvagn
 
-router.delete("/carts/:id", (req, res) => {
+router.delete("/carts/user/:id", (req, res) => {
   const { id } = req.params;
 
   // Försök tömma user_id först
