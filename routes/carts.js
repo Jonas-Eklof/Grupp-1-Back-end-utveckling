@@ -4,12 +4,6 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const { validateCartInput } = require("../middleware/validateCart");
 
-// Simulerar tilldelandet av ett quest_id när man går in på vår sida
-
-router.get("/guest-id", (req, res) => {
-  const guest_id = uuidv4();
-  res.status(200).json({ guest_id });
-});
 
 // Hämta en användares kundvagn
 
