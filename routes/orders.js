@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Förslag på hur vi kan skapa en ny order från kundvagn
 
-router.post("/orders", (req, res) => {
+router.post("/", (req, res) => {
   const { user_id } = req.body;
 
   try {
