@@ -8,6 +8,13 @@ require("dotenv").config();
 
 const router = express.Router();
 
+// Simulerar tilldelandet av ett quest_id när man går in på vår sida
+
+router.get("/guest-id", (req, res) => {
+  const guest_id = uuidv4();
+  res.status(200).json({ guest_id });
+});
+
 // POST /register - Hanterar registrering av ny användare
 router.post(
   "/register",
