@@ -427,7 +427,7 @@ Tar bort en specifik produkt från kundvagnen baserat på `cart_id`.
 
 ---
 
-### DELETE `/carts/:id`
+### DELETE `/carts/user/:id`
 
 **Beskrivning:**  
 Tömmer hela kundvagnen för en användare **eller** gäst (`user_id` eller `guest_id`).
