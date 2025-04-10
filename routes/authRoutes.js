@@ -229,7 +229,7 @@ router.post(
         `UPDATE Carts SET user_id = ?, guest_id = NULL WHERE guest_id = ?`
       ).run(user_id, guest_id);
 
-      // 5. Svara med nya user_id:t
+      // 5. Svara med nytt user_id
       res.status(201).json({
         message: "Användare skapad och varukorg överförd.",
         user_id,
