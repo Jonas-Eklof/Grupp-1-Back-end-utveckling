@@ -1,14 +1,14 @@
 const express = require("express");
-const db = require("../database"); // Se till att databasen är korrekt importerad
+const db = require("../database");
 const router = express.Router();
 
-// Förslag på hur vi kan skapa en ny order från kundvagn
+// Skapa ny order från innehåll i kundvagn
 
 router.post("/", (req, res) => {
   const { user_id } = req.body;
 
   try {
-    // 1. Hämta varorna i kundvagnen
+    // 1. Hämta produkter i kundvagnen
     const cartStmt = db.prepare(`
       SELECT Carts.product_id, Carts.quantity, Products.name, Products.price
       FROM Carts
@@ -32,7 +32,7 @@ router.post("/", (req, res) => {
       totalQuantity += item.quantity;
     });
 
-    // 3. Applicera rabatt om fler än 3 produkter
+    // 3. Applicera rabatt om 3 eller fler produkter
     let discount = 0;
     if (totalQuantity >= 3) {
       discount = totalPrice * 0.1; // 10% rabatt
@@ -83,8 +83,8 @@ router.post("/", (req, res) => {
       order_id,
       order_date: new Date().toISOString(),
       delivery_status: "pending",
-      discount: discount.toFixed(2), // Visar rabattbeloppet
-      total_price: totalPrice.toFixed(2), // Rabatterat pris
+      discount: discount.toFixed(2),
+      total_price: totalPrice.toFixed(2),
       products: cartItems.map((item) => ({
         name: item.name,
         quantity: item.quantity,
