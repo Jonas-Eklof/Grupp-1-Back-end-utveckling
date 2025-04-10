@@ -49,7 +49,7 @@ router.get("/carts/:id", (req, res) => {
       totalQuantity += item.quantity;
     });
 
-    // Om fler än 3 produkter i varukorgen → ge 10% rabatt
+    // Om fler än 3 produkter i varukorgen > ge 10% rabatt
     let discount = 0;
     if (totalQuantity > 2) {
       discount = totalPrice * 0.1; // 10% rabatt
