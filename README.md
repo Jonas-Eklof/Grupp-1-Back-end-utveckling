@@ -674,12 +674,21 @@ Uppdaterar leveransstatus för en specifik order.
 
 ---
 
+### Andra felmeddelanden
+
+**429 - Too Many Requests**  
+Vid för många förfrågningar till servern under kort tid ingriper limiter middleware och stoppar.
+
+
+
+---
 
 
 
 
 
-***Websockets tankar***
+
+### Websockets tankar
 Om vi vill lyfta användarupplevelsen och skapa en mer interaktiv webshop kan websockets vara en bra idé.
 Chatfunktion/support skulle kunna implementeras för projektet.
 
